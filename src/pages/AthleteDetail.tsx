@@ -173,15 +173,16 @@ function getFlagEmoji(countryName: string): string {
 }
 // --- Fine Logica Bandiere ---
 
-// --- 2. Props per il Componente (Invariato) ---
+// --- 2. Props per il Componente ---
 interface AthleteDetailProps {
     fisCode: string;
-    goBack: () => void; 
+    goBack: () => void;
+    goToEventDetail: (codex: string, date: string) => void;
 }
 
 
 // --- 3. Componente Principale ---
-function AthleteDetail({ fisCode, goBack }: AthleteDetailProps) {
+function AthleteDetail({ fisCode, goBack, goToEventDetail }: AthleteDetailProps) {
   const [details, setDetails] = useState<AthleteDetail | null>(null);
   const [results, setResults] = useState<RaceResult[]>([]);
   const [loading, setLoading] = useState(true);
@@ -302,7 +303,11 @@ function AthleteDetail({ fisCode, goBack }: AthleteDetailProps) {
                     </div>
                     
                     {results.map((result, index) => (
-                        <div key={index} className={styles.resultRow}>
+                        <div
+                            key={index}
+                            className={`${styles.resultRow} ${styles.clickableRow}`}
+                            onClick={() => goToEventDetail(result.codex, result.event_date)}
+                        >
                             <div className={styles.resultDate}>
                                 {new Date(result.event_date).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                             </div>

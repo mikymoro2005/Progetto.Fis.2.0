@@ -1,0 +1,315 @@
+/* Atleti.module.css - Stili per i filtri della pagina Atleti */
+
+.filtersContainer {
+  max-width: 1280px;
+  margin: 0 auto 2rem auto;
+  padding: 1.5rem;
+  background-color: var(--card-bg, #1c1c1e);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+:global(#root.light-mode) .filtersContainer {
+  background-color: var(--card-bg, #ffffff);
+}
+
+.filtersTitle {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--page-text);
+}
+
+/* Filtri Testo */
+.textFilters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filterInput {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--toggle-bg-hover);
+  color: var(--page-text);
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.filterInput:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.filterInput::placeholder {
+  color: var(--text-hover);
+}
+
+.filterSelect {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--toggle-bg-hover);
+  color: var(--page-text);
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.filterSelect option {
+  background-color: var(--card-bg);
+  color: var(--page-text);
+}
+
+/* Filtri Età */
+.ageFilters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.filterInputSmall {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--toggle-bg-hover);
+  color: var(--page-text);
+  font-size: 0.95rem;
+  width: 120px;
+  transition: border-color 0.2s ease;
+}
+
+.filterInputSmall:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.ageSeparator {
+  font-size: 1.2rem;
+  color: var(--text-hover);
+  font-weight: 600;
+}
+
+/* Filtri Genere */
+.genderFilters {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.genderButton {
+  padding: 0.75rem 2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--toggle-bg-hover);
+  color: var(--page-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.genderButton:hover {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #ffffff;
+}
+
+.activeGender {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #ffffff;
+}
+
+.genderButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: var(--toggle-bg-hover);
+  border-color: var(--border-color);
+  color: var(--text-hover);
+}
+
+.genderButton:disabled:hover {
+  background-color: var(--toggle-bg-hover);
+  border-color: var(--border-color);
+  color: var(--text-hover);
+  transform: none;
+}
+
+.autoDetected {
+  box-shadow: 0 0 0 2px var(--accent-color);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px var(--accent-color);
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--accent-color);
+  }
+}
+
+/* Filtri Specialità */
+.disciplineFilters {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap; /* Permette il wrap su schermi piccoli */
+}
+
+.disciplineButton {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.disciplineButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Stili per ogni specialità */
+.slButton {
+  background-color: rgba(255, 59, 48, 0.1);
+  border-color: rgba(255, 59, 48, 0.3);
+  color: #ff3b30;
+}
+
+.slButton.activeDiscipline {
+  background-color: #ff3b30;
+  border-color: #ff3b30;
+  color: #ffffff;
+}
+
+.gsButton {
+  background-color: rgba(52, 199, 89, 0.1);
+  border-color: rgba(52, 199, 89, 0.3);
+  color: #34c759;
+}
+
+.gsButton.activeDiscipline {
+  background-color: #34c759;
+  border-color: #34c759;
+  color: #ffffff;
+}
+
+.sgButton {
+  background-color: rgba(255, 149, 0, 0.1);
+  border-color: rgba(255, 149, 0, 0.3);
+  color: #ff9500;
+}
+
+.sgButton.activeDiscipline {
+  background-color: #ff9500;
+  border-color: #ff9500;
+  color: #ffffff;
+}
+
+.dhButton {
+  background-color: rgba(0, 122, 255, 0.1);
+  border-color: rgba(0, 122, 255, 0.3);
+  color: #007aff;
+}
+
+.dhButton.activeDiscipline {
+  background-color: #007aff;
+  border-color: #007aff;
+  color: #ffffff;
+}
+
+.acButton {
+  background-color: rgba(175, 82, 222, 0.1);
+  border-color: rgba(175, 82, 222, 0.3);
+  color: #af52de;
+}
+
+.acButton.activeDiscipline {
+  background-color: #af52de;
+  border-color: #af52de;
+  color: #ffffff;
+}
+
+/* Bottone Reset */
+.resetButton {
+  display: block;
+  margin: 0 auto;
+  padding: 0.75rem 2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--toggle-bg-hover);
+  color: var(--page-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resetButton:hover {
+  background-color: #ff5e5e;
+  border-color: #ff5e5e;
+  color: #ffffff;
+}
+
+/* Indicatore Contesto Ranking */
+.rankingContext {
+  text-align: center;
+  margin: 1.5rem auto 1rem auto;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--accent-color), rgba(255, 149, 0, 0.8));
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  max-width: 600px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filtersContainer {
+    padding: 1rem;
+  }
+
+  .textFilters {
+    grid-template-columns: 1fr;
+  }
+
+  .genderFilters {
+    flex-direction: column;
+  }
+
+  /* Le specialità si adattano su mobile senza scroll */
+  .disciplineFilters {
+    gap: 0.5rem; /* Gap ridotto su mobile */
+    flex-wrap: wrap; /* Permette il wrap su 2 righe se necessario */
+  }
+
+  .disciplineButton {
+    padding: 0.6rem 1.2rem; /* Padding ottimizzato per mobile */
+    font-size: 0.85rem;
+    flex: 1 1 auto; /* Cresce per riempire lo spazio */
+    min-width: 55px; /* Larghezza minima per leggibilità */
+    max-width: 80px; /* Larghezza massima per evitare bottoni troppo grandi */
+  }
+}

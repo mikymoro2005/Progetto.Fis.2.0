@@ -115,7 +115,7 @@
 }
 
 .pointItem {
-    width: 65px; 
+    width: 65px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -133,6 +133,62 @@
     font-weight: 700;
     margin-top: 0.25rem;
     font-size: 1rem;
+}
+
+/* Colori per i box delle specialità */
+.dhBox {
+    background-color: rgba(0, 122, 255, 0.1);
+    border: 1px solid rgba(0, 122, 255, 0.2);
+}
+.dhBox span:first-child { color: #007aff; }
+
+.slBox {
+    background-color: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+}
+.slBox span:first-child { color: #ff3b30; }
+
+.gsBox {
+    background-color: rgba(52, 199, 89, 0.1);
+    border: 1px solid rgba(52, 199, 89, 0.2);
+}
+.gsBox span:first-child { color: #34c759; }
+
+.sgBox {
+    background-color: rgba(255, 149, 0, 0.1);
+    border: 1px solid rgba(255, 149, 0, 0.2);
+}
+.sgBox span:first-child { color: #ff9500; }
+
+.acBox {
+    background-color: rgba(175, 82, 222, 0.1);
+    border: 1px solid rgba(175, 82, 222, 0.2);
+}
+.acBox span:first-child { color: #af52de; }
+
+/* Mobile: Box punti FIS più compatti per stare tutti su una riga */
+@media (max-width: 768px) {
+    .fisPointsContainer {
+        gap: 0.4rem; /* Gap ridotto */
+        flex-wrap: nowrap; /* Forza su una riga */
+    }
+
+    .pointItem {
+        width: 52px; /* Larghezza ridotta */
+        padding: 0.4rem 0.2rem; /* Padding ridotto */
+        font-size: 0.75rem; /* Font ridotto */
+        border-radius: 6px;
+    }
+
+    .pointItem span:first-child {
+        font-size: 0.7rem; /* Label più piccola */
+        font-weight: 700;
+    }
+
+    .pointItem span:last-child {
+        font-size: 0.85rem; /* Valore più piccolo */
+        margin-top: 0.2rem;
+    }
 }
 
 /* --- 5. Sezione Risultati Recenti (STILE RIGA) --- */
@@ -186,14 +242,24 @@
     background-color: var(--card-bg, #1c1c1e);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+}
+
+.clickableRow {
+    cursor: pointer;
+}
+
+.clickableRow:hover {
+    background-color: var(--toggle-bg-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .resultRow:hover {
     background-color: var(--toggle-bg-hover);
 }
 
-/* Mobile: Card compatta e moderna */
+/* Mobile: Card compatta e moderna (STILE ORIGINALE) */
 @media (max-width: 768px) {
     .resultRow {
         display: flex;
@@ -202,7 +268,7 @@
         padding: 1rem;
         position: relative;
     }
-    
+
     /* Data in alto a destra */
     .resultDate {
         position: absolute;
@@ -214,7 +280,7 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    
+
     /* Location + Bandiera in alto a sinistra */
     .resultLocation {
         font-size: 1.1rem;
@@ -225,11 +291,11 @@
         gap: 0.6rem;
         padding-right: 6rem;
     }
-    
+
     .resultCountry {
         display: none;
     }
-    
+
     /* Categoria e Disciplina centrate sulla stessa riga */
     .resultCategoryDiscipline {
         display: flex;
@@ -238,7 +304,7 @@
         gap: 0.75rem;
         flex-wrap: wrap;
     }
-    
+
     .resultCategory {
         font-size: 0.75rem;
         color: var(--text-hover);
@@ -249,13 +315,13 @@
         text-transform: uppercase;
         letter-spacing: 0.3px;
     }
-    
+
     .resultDiscipline {
         font-size: 0.95rem;
         font-weight: 600;
         color: var(--accent-color);
     }
-    
+
     /* Container statistiche in riga */
     .resultStats {
         display: grid;
@@ -265,7 +331,7 @@
         padding-top: 0.75rem;
         border-top: 1px solid var(--border-color);
     }
-    
+
     .resultRank,
     .resultFisPoints,
     .resultCupPoints {
@@ -274,7 +340,7 @@
         gap: 0.15rem;
         align-items: center;
     }
-    
+
     .resultRank::before {
         content: 'POSIZIONE';
         font-size: 0.65rem;
@@ -282,13 +348,13 @@
         font-weight: 600;
         letter-spacing: 0.5px;
     }
-    
+
     .resultRank {
         font-size: 1.5rem;
         font-weight: 700;
         color: var(--accent-color);
     }
-    
+
     .resultFisPoints::before {
         content: 'PUNTI FIS';
         font-size: 0.65rem;
@@ -296,13 +362,13 @@
         font-weight: 600;
         letter-spacing: 0.5px;
     }
-    
+
     .resultFisPoints {
         font-size: 0.95rem;
         color: var(--page-text);
         font-weight: 600;
     }
-    
+
     .resultCupPoints::before {
         content: 'PUNTI WC';
         font-size: 0.65rem;
@@ -310,13 +376,13 @@
         font-weight: 600;
         letter-spacing: 0.5px;
     }
-    
+
     .resultCupPoints {
         font-size: 1rem;
         font-weight: 700;
         color: var(--accent-color);
     }
-    
+
     /* Status alternativo quando atleta non ha finito */
     .resultStatusOnly {
         display: flex;
@@ -325,7 +391,7 @@
         padding-top: 0.75rem;
         border-top: 1px solid var(--border-color);
     }
-    
+
     .statusBadge {
         font-size: 0.9rem;
         font-weight: 700;

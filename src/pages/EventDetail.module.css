@@ -1,0 +1,441 @@
+/* src/pages/EventDetail.module.css */
+
+.mainContainer {
+  padding: 2rem 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: var(--page-text);
+  min-height: 80vh;
+}
+
+/* Bottone Torna Indietro */
+.backButton {
+  background: none;
+  border: none;
+  color: var(--text-hover);
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  transition: color 0.2s ease;
+}
+
+.backButton:hover {
+  color: var(--accent-color);
+}
+
+.loading, .error, .noResults {
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 3rem 1rem;
+  color: var(--text-hover);
+}
+
+.error {
+  color: #ff5e5e;
+}
+
+/* Header Evento */
+.eventHeader {
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.eventMainInfo {
+  margin-bottom: 1.5rem;
+}
+
+.eventTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--page-text);
+  margin: 0 0 0.5rem 0;
+}
+
+.eventDate {
+  font-size: 1.1rem;
+  color: var(--text-hover);
+  font-weight: 500;
+  margin: 0;
+}
+
+.eventDetails {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detailLabel {
+  font-size: 0.8rem;
+  color: var(--text-hover);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.detailValue {
+  font-size: 1.1rem;
+  color: var(--page-text);
+  font-weight: 700;
+}
+
+/* Sezione Risultati */
+.resultsSection {
+  margin-bottom: 3rem;
+}
+
+.resultsSection h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--page-text);
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.resultsTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Header Tabella (Desktop) */
+.resultHeader {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .resultHeader {
+    display: grid;
+    grid-template-columns: var(--desktop-grid);
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-hover);
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .resultHeader div:nth-child(1),
+  .resultHeader div:nth-child(2) {
+    text-align: center;
+  }
+
+  /* Colonne numeriche (Run 1-4, Tempo, Distacco, Punti FIS, Punti WC) - allineate a destra */
+  /* Dalla 5a colonna in poi (dopo Pos, Pett, Nome, Paese) */
+  .resultHeader div:nth-child(n+5) {
+    text-align: right;
+  }
+}
+
+/* Righe Risultati */
+.resultRow {
+  background-color: var(--card-bg, #1c1c1e);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resultRow:hover {
+  background-color: var(--toggle-bg-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile - SUPER COMPATTO */
+@media (max-width: 768px) {
+  .resultRow {
+    display: grid;
+    grid-template-columns: 35px 1fr auto;
+    grid-template-rows: auto auto;
+    gap: 0.3rem 0.6rem;
+    padding: 0.5rem 0.6rem;
+    align-items: center;
+  }
+
+  /* Posizione - prima colonna, prima riga */
+  .resultRank {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    text-align: center;
+  }
+
+  /* Pettorale - nascosto per risparmiare spazio */
+  .resultBib {
+    display: none;
+  }
+
+  /* Nome atleta - seconda colonna, prima riga */
+  .resultName {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--page-text);
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .resultFisCode {
+    font-size: 0.6rem;
+    color: var(--text-hover);
+    font-weight: 500;
+  }
+
+  /* Paese - seconda colonna, seconda riga */
+  .resultCountry {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 0.7rem;
+    color: var(--text-hover);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  /* Tempo - terza colonna, prima riga */
+  .resultTime {
+    grid-column: 3;
+    grid-row: 1;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-align: right;
+    padding: 0;
+    border: none;
+  }
+
+  /* Distacco - terza colonna, seconda riga */
+  .resultDiff {
+    grid-column: 3;
+    grid-row: 2;
+    font-size: 0.65rem;
+    color: var(--text-hover);
+    text-align: right;
+  }
+
+  /* Punti FIS e WC - nascosti per risparmiare spazio */
+  .resultFisPoints,
+  .resultCupPoints {
+    display: none;
+  }
+
+  /* Run times - nascosti su mobile */
+  .resultRun1,
+  .resultRun2,
+  .resultRun3,
+  .resultRun4 {
+    display: none;
+  }
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+  .resultRow {
+    display: grid;
+    grid-template-columns: var(--desktop-grid);
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .resultRank {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--accent-color);
+  }
+
+  .resultBib {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-hover);
+  }
+
+  .resultName {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--page-text);
+  }
+
+  .resultFisCode {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-hover);
+    font-weight: 400;
+    margin-top: 0.15rem;
+  }
+
+  .resultCountry {
+    font-size: 0.9rem;
+    color: var(--text-hover);
+  }
+
+  /* Run times */
+  .resultRun1,
+  .resultRun2,
+  .resultRun3,
+  .resultRun4 {
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--page-text);
+    font-weight: 500;
+  }
+
+  .resultTime {
+    text-align: right;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+  }
+
+  .resultDiff {
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--text-hover);
+  }
+
+  .resultFisPoints {
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--page-text);
+  }
+
+  .resultCupPoints {
+    text-align: right;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-color);
+  }
+}
+
+/* Sezione DNF */
+.dnfSection {
+  margin-bottom: 2rem;
+}
+
+.dnfSection h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--page-text);
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.dnfTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dnfRow {
+  background-color: var(--card-bg, #1c1c1e);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid #ff5e5e;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: grid;
+  grid-template-columns: 60px 2fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.dnfRow:hover {
+  background-color: var(--toggle-bg-hover);
+  transform: translateX(4px);
+}
+
+.dnfBib {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-hover);
+}
+
+.dnfName {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--page-text);
+}
+
+.dnfFisCode {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-hover);
+  font-weight: 400;
+  margin-top: 0.15rem;
+}
+
+.dnfCountry {
+  font-size: 0.9rem;
+  color: var(--text-hover);
+}
+
+.dnfStatus {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ff5e5e;
+  background-color: rgba(255, 94, 94, 0.15);
+  padding: 0.4rem 1rem;
+  border-radius: 5px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Mobile DNF - COMPATTO */
+@media (max-width: 768px) {
+  .dnfRow {
+    grid-template-columns: 35px 1fr auto;
+    gap: 0.3rem 0.6rem;
+    padding: 0.5rem 0.6rem;
+    position: relative;
+  }
+
+  .dnfBib {
+    font-size: 0.75rem;
+    background-color: var(--toggle-bg-hover);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .dnfName {
+    padding-top: 0;
+    font-size: 0.85rem;
+  }
+
+  .dnfFisCode {
+    font-size: 0.6rem;
+  }
+
+  .dnfCountry {
+    text-align: left;
+    font-size: 0.7rem;
+  }
+
+  .dnfStatus {
+    text-align: center;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+  }
+}
