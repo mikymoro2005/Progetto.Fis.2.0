@@ -1,0 +1,291 @@
+/* ... (tutti gli stili da .rankContainer a .loadMoreButton:disabled) ... */
+.rankContainer {
+    padding: 2rem 1rem;
+    color: var(--page-text);
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--page-text);
+  }
+  
+  .filterButtons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .filterButton {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--page-text);
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .filterButton:hover {
+    background-color: var(--toggle-bg-hover);
+  }
+  
+  .activeButton {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    font-size: 1.1rem;
+    padding: 3rem 1rem;
+    color: var(--text-hover);
+  }
+  .error {
+    color: #ff5e5e;
+  }
+  
+  
+  /* ---
+     NUOVI STILI LAYOUT (Mobile e Desktop)
+  --- */
+  
+  .athleteList {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  
+  .athleteCard {
+    background-color: var(--card-bg, #1c1c1e);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
+    display: flex;
+    /* Mobile-first: la card è in colonna */
+    flex-direction: column;
+  }
+  
+  :global(#root.light-mode) .athleteCard {
+    background-color: var(--card-bg, #ffffff);
+  }
+  
+  /* --- Blocco 1: Info Principali --- */
+  .athleteMainInfo {
+    display: flex;
+    align-items: center; /* Allinea verticalmente gli elementi */
+    padding: 1rem;
+    /* Su mobile, ha un separatore in basso */
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .position {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-hover); /* Un po' meno invadente */
+    margin-right: 1rem;
+    min-width: 25px; /* Dà un po' di spazio */
+    text-align: right;
+  }
+  
+  .nameBlock {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Fa sì che il nome occupi lo spazio */
+    /* Aggiungiamo min-width per evitare che venga schiacciato */
+    min-width: 100px;
+  }
+  
+  .athleteName {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--page-text);
+  }
+  
+  .fisCode {
+    font-size: 0.8rem;
+    color: var(--text-hover);
+  }
+  
+  .infoBlock {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Mantenuto per mobile */
+    padding-left: 1rem; /* Spazio dal nome */
+    white-space: nowrap; /* Non manda a capo "anni" */
+  }
+  
+  .flagEmoji {
+    font-size: 1.5rem; /* Bandiera più grande */
+    margin-right: 0.5rem;
+  }
+  
+  .ageInfo {
+    font-size: 0.9rem;
+    color: var(--text-hover);
+  }
+  
+  /* --- Blocco 2: Punteggi --- */
+  .cardScores {
+    display: grid;
+    /* Su mobile, si adatta */
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .scoreItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Rimosso background-color generico */
+    background-color: var(--toggle-bg-hover);
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    border: 1px solid transparent; /* Aggiungiamo un bordo per il colore */
+  }
+  
+  .scoreLabel {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-hover);
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+  }
+  
+  .scoreValue {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--page-text);
+    margin-top: 0.25rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+  
+  /* ---
+     DESKTOP - Layout a Riga
+  --- */
+  
+  @media (min-width: 900px) {
+    .athleteCard {
+      /* Su desktop, i flex item sono in riga */
+      flex-direction: row;
+      align-items: center; /* Allinea tutto verticalmente */
+    }
+  
+    .athleteMainInfo {
+      flex-grow: 1; /* Occupa lo spazio disponibile */
+      border-bottom: none; /* Niente separatore su desktop */
+      border-right: 1px solid var(--border-color); /* Separatore verticale */
+      min-width: 400px; /* Dà spazio al blocco nome/info */
+    }
+  
+    .infoBlock {
+      width: 110px; /* Larghezza fissa per bandiera/età */
+      flex-shrink: 0; /* Non si restringe */
+      justify-content: flex-end; /* Allinea contenuto a destra */
+      margin-left: 1rem; /* Sostituisce auto, dà spazio dal nome */
+      padding-left: 0; /* Non più necessario */
+    }
+  
+    .cardScores {
+      grid-template-columns: repeat(5, 70px); /* Colonne fisse di 70px */
+      padding: 1rem 1.5rem;
+      margin-left: auto; /* Assicura che stia a destra */
+      gap: 0.5rem;
+    }
+  }
+  
+  /* ---
+     NUOVI STILI PER "SHOW MORE"
+  --- */
+  
+  .loadMoreContainer {
+    text-align: center;
+    padding: 2rem 0;
+  }
+  
+  .loadMoreButton {
+    /* Riusiamo lo stile dei bottoni filtro */
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--page-text);
+    padding: 0.75rem 2rem; /* Leggermente più grande */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .loadMoreButton:hover {
+    background-color: var(--toggle-bg-hover);
+  }
+  
+  /* Stile quando è disabilitato (sta caricando) */
+  .loadMoreButton:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+  
+  /* ---
+     NUOVI STILI PER I COLORI DEI BOX
+  --- */
+  
+  /* Colori solidi per i label */
+  .dhBox .scoreLabel { color: #007aff; } /* Blu */
+  .slBox .scoreLabel { color: #ff3b30; } /* Rosso */
+  .gsBox .scoreLabel { color: #34c759; } /* Verde */
+  .sgBox .scoreLabel { color: #ff9500; } /* Arancione */
+  .acBox .scoreLabel { color: #af52de; } /* Viola */
+  
+  /* Colori diffusi (opachi) per lo sfondo e il bordo */
+  .dhBox {
+    background-color: rgba(0, 122, 255, 0.1);
+    border-color: rgba(0, 122, 255, 0.2);
+  }
+  .slBox {
+    background-color: rgba(255, 59, 48, 0.1);
+    border-color: rgba(255, 59, 48, 0.2);
+  }
+  .gsBox {
+    background-color: rgba(52, 199, 89, 0.1);
+    border-color: rgba(52, 199, 89, 0.2);
+  }
+  .sgBox {
+    background-color: rgba(255, 149, 0, 0.1);
+    border-color: rgba(255, 149, 0, 0.2);
+  }
+  .acBox {
+    background-color: rgba(175, 82, 222, 0.1);
+    border-color: rgba(175, 82, 222, 0.2);
+  }
+
+  /* --- Aggiungi questo in fondo a src/Rank.module.css --- */
+.clickableCard {
+  cursor: pointer;
+}
+
+.clickableCard:hover {
+  /* Un leggero cambio di colore/ombra per indicare che è cliccabile */
+  opacity: 0.9; 
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Rimuovi l'hover dall'elemento genitore se già presente */
+.athleteCard:hover {
+  /* Assicurati che non ci siano altri stili hover che interferiscono */
+}
+  
+  

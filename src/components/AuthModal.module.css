@@ -1,0 +1,152 @@
+/* src/components/AuthModal.module.css */
+
+/* 1. Overlay (sfondo scuro) */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2000; /* Sopra l'header */
+    
+    /* Sfondo scuro semi-trasparente */
+    background-color: rgba(0, 0, 0, 0.5);
+    
+    /* Effetto sfocato sulla pagina sottostante */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    
+    /* Centra il contenuto */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Animazione di entrata */
+    animation: fadeIn 0.3s ease;
+  }
+  
+  /* 2. Contenuto del Modal (il box) */
+  .modalContent {
+    position: relative;
+    
+    /* Usa le variabili del tema per lo sfondo! */
+    background-color: var(--card-bg, #1c1c1e);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    
+    /* --- RESPONSIVE --- */
+    /* Mobile (default): Quadrato */
+    width: 90vw;
+    max-width: 400px;
+    
+    /* Animazione "pop-up" */
+    animation: popIn 0.3s ease;
+  }
+  
+  /* Desktop: Rettangolare */
+  @media (min-width: 769px) {
+    .modalContent {
+      width: 100%; /* Larghezza fissa */
+      max-width: 450px; /* Più largo su desktop */
+    }
+  }
+  
+  /* 3. Bottone di chiusura (la X) */
+  .closeButton {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-hover);
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .closeButton:hover {
+    color: var(--page-text);
+  }
+  
+  /* 4. Stili per il Form */
+  .formContainer {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .formContainer h2 {
+    text-align: center;
+    margin: 0 0 1.5rem 0;
+    color: var(--page-text);
+  }
+  
+  .formContainer label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-hover);
+    margin-bottom: 0.25rem;
+  }
+  
+  .formContainer input {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    background-color: var(--toggle-bg-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--page-text);
+    font-size: 1rem;
+    box-sizing: border-box; /* Importante per il padding */
+  }
+  
+  .submitButton {
+    width: 100%;
+    padding: 0.85rem;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  .submitButton:hover {
+    filter: brightness(1.1);
+  }
+  
+  /* 5. Link per cambiare (Sei già registrato?...) */
+  .toggleLink {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-hover);
+    margin-top: 1.5rem;
+  }
+  
+  .toggleLink button {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 0 1px 0;
+    border-bottom: 1px solid transparent;
+  }
+  .toggleLink button:hover {
+    border-bottom-color: var(--accent-color);
+  }
+  
+  
+  /* --- Animazioni --- */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes popIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  

@@ -1,0 +1,453 @@
+/* src/pages/AthleteDetail.module.css */
+
+/* --- 1. Contenitore Principale --- */
+.mainContainer {
+    padding: 2rem 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--page-text);
+    min-height: 80vh; 
+}
+
+/* --- 2. Bottone Torna Indietro --- */
+.backButton {
+    background: none;
+    border: none;
+    color: var(--text-hover);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    transition: color 0.2s ease;
+}
+.backButton:hover {
+    color: var(--accent-color);
+}
+
+
+/* --- 3. Header Atleta (Info Principali) --- */
+.athleteHeader {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.mainInfoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.flagContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.flagEmoji {
+    font-size: 2rem;
+}
+
+.countryName {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-hover);
+}
+
+.athleteStatus {
+    font-size: 0.9rem;
+    font-weight: 700;
+    padding: 0.3rem 0.8rem;
+    border-radius: 5px;
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.athleteName {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--page-text);
+    margin: 0.5rem 0 0.25rem 0;
+}
+
+.subInfoRow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    color: var(--text-hover);
+    font-size: 0.9rem;
+}
+
+.teamName {
+    font-weight: 600;
+}
+
+/* --- 4. Blocco Punti FIS (CENTRATO) --- */
+.fisPointsBlock {
+    background-color: var(--card-bg, #1c1c1e);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.fisPointsBlock h2 {
+    color: var(--accent-color);
+    font-size: 1.25rem;
+    margin-top: 0;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.fisPointsContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: nowrap;
+}
+
+.pointItem {
+    width: 65px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--toggle-bg-hover);
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+}
+.pointItem span:first-child {
+    color: var(--text-hover);
+    font-weight: 600;
+}
+.pointItem span:last-child {
+    color: var(--page-text);
+    font-weight: 700;
+    margin-top: 0.25rem;
+    font-size: 1rem;
+}
+
+/* --- 5. Sezione Risultati Recenti (STILE RIGA) --- */
+.resultsSection h2 {
+    color: var(--page-text);
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.resultsTable {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Header della tabella (solo desktop) */
+.resultHeader {
+    display: none;
+}
+
+@media (min-width: 769px) {
+    .resultHeader {
+        display: grid;
+        grid-template-columns: 110px 1fr 50px 140px 110px 70px 90px 80px;
+        gap: 1rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--text-hover);
+        text-transform: uppercase;
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .resultHeader div:nth-child(3) {
+        text-align: center;
+    }
+    
+    .resultHeader div:nth-child(6),
+    .resultHeader div:nth-child(7),
+    .resultHeader div:nth-child(8) {
+        text-align: center;
+    }
+}
+
+.resultRow {
+    display: grid;
+    align-items: center;
+    background-color: var(--card-bg, #1c1c1e);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.resultRow:hover {
+    background-color: var(--toggle-bg-hover);
+}
+
+/* Mobile: Card compatta e moderna */
+@media (max-width: 768px) {
+    .resultRow {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        padding: 1rem;
+        position: relative;
+    }
+    
+    /* Data in alto a destra */
+    .resultDate {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 0.7rem;
+        color: var(--text-hover);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Location + Bandiera in alto a sinistra */
+    .resultLocation {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--page-text);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding-right: 6rem;
+    }
+    
+    .resultCountry {
+        display: none;
+    }
+    
+    /* Categoria e Disciplina centrate sulla stessa riga */
+    .resultCategoryDiscipline {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+    
+    .resultCategory {
+        font-size: 0.75rem;
+        color: var(--text-hover);
+        font-weight: 600;
+        padding: 0.3rem 0.7rem;
+        background-color: var(--toggle-bg-hover);
+        border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+    
+    .resultDiscipline {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--accent-color);
+    }
+    
+    /* Container statistiche in riga */
+    .resultStats {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .resultRank,
+    .resultFisPoints,
+    .resultCupPoints {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        align-items: center;
+    }
+    
+    .resultRank::before {
+        content: 'POSIZIONE';
+        font-size: 0.65rem;
+        color: var(--text-hover);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .resultRank {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+    
+    .resultFisPoints::before {
+        content: 'PUNTI FIS';
+        font-size: 0.65rem;
+        color: var(--text-hover);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .resultFisPoints {
+        font-size: 0.95rem;
+        color: var(--page-text);
+        font-weight: 600;
+    }
+    
+    .resultCupPoints::before {
+        content: 'PUNTI WC';
+        font-size: 0.65rem;
+        color: var(--text-hover);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .resultCupPoints {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--accent-color);
+    }
+    
+    /* Status alternativo quando atleta non ha finito */
+    .resultStatusOnly {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--border-color);
+    }
+    
+    .statusBadge {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #ff6b6b;
+        background-color: rgba(255, 107, 107, 0.15);
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+/* Desktop: tutto su una riga */
+@media (min-width: 769px) {
+    .resultRow {
+        grid-template-columns: 110px 1fr 50px 140px 110px 70px 90px 80px;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+    }
+    
+    /* Desktop: mantiene layout originale */
+    .resultDate {
+        position: static;
+    }
+    
+    .resultLocation {
+        padding-right: 0;
+    }
+    
+    .resultCategoryDiscipline {
+        display: contents;
+    }
+    
+    /* Desktop: Stats normali inline, non in colonna */
+    .resultStats {
+        display: contents;
+    }
+    
+    .resultRank,
+    .resultFisPoints,
+    .resultCupPoints {
+        display: block;
+    }
+    
+    .resultRank::before,
+    .resultFisPoints::before,
+    .resultCupPoints::before {
+        display: none;
+    }
+    
+    .resultStatusOnly {
+        grid-column: 6 / 9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-top: none;
+        padding-top: 0;
+    }
+    
+    .statusBadge {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #ff6b6b;
+        background-color: rgba(255, 107, 107, 0.15);
+        padding: 0.4rem 1rem;
+        border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+.resultDate {
+    font-size: 0.9rem;
+    color: var(--text-hover);
+    font-weight: 500;
+}
+
+.resultLocation {
+    font-weight: 600;
+    color: var(--page-text);
+}
+
+.resultCountry {
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.resultCategory {
+    font-size: 0.85rem;
+    color: var(--text-hover);
+}
+
+.resultDiscipline {
+    font-weight: 600;
+    color: var(--page-text);
+}
+
+.resultRank {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-align: center;
+}
+
+.resultFisPoints {
+    font-size: 0.9rem;
+    color: var(--text-hover);
+    text-align: right;
+}
+
+.resultCupPoints {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    text-align: right;
+}
+
+/* --- Media Queries per Desktop --- */
+@media (min-width: 900px) {
+    .subInfoRow {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 2rem;
+    }
+}

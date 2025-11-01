@@ -1,0 +1,177 @@
+/* --- 1. VARIABILI PER IL TEMA (Default: Scuro) --- */
+.headerContainer {
+  /* Nuovi Colori */
+  --header-bg: rgba(0, 41, 82, 0.9);      /* Blu Navy scuro semi-trasparente */
+  --text-color: #f5f5f7;
+  --text-hover: #a0a0a0;
+  --border-color: rgba(0, 71, 142, 0.5); /* Bordo Blu */
+  --accent-color: #00aaff;               /* Blu Elettrico per accento */
+  --toggle-bg-hover: rgba(0, 71, 142, 0.3);
+
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* --- 2. REGOLE PER IL TEMA CHIARO --- */
+:global(#root.light-mode) .headerContainer {
+  --header-bg: rgba(220, 235, 255, 0.9);   /* Azzurrino semi-trasparente */
+  --text-color: #1d1d1f;
+  --text-hover: #555555;
+  --border-color: rgba(0, 122, 255, 0.2);
+  --toggle-bg-hover: rgba(0, 122, 255, 0.1);
+}
+
+/* --- 3. STILI GENERALI DELL'HEADER --- */
+.headerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  padding: 0 1.5rem;
+}
+
+.logo a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* --- 4. STILI DEI LINK DI NAVIGAZIONE --- */
+.navLinks {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navLinks a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.navLinks a:hover {
+  color: var(--accent-color);
+}
+
+/* --- Stile per il link della pagina attiva --- */
+.activeLink {
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+/* --- 5. STILI BOTTONI ICONA (Tema e Account) --- */
+.themeToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.accountLink {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.accountLink svg {
+  display: block;
+}
+
+.themeToggle:hover,
+.accountLink:hover {
+  color: var(--accent-color);
+}
+
+
+/* --- 6. STILI PER HAMBURGER & MOBILE --- */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 1.8rem;
+  height: 1.8rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.hamburgerLinea {
+  width: 1.8rem;
+  height: 2px;
+  background-color: var(--text-color);
+  border-radius: 10px;
+  transition: all 0.3s linear;
+}
+
+@media (max-width: 768px) {
+  .navLinks {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    background-color: var(--header-bg);
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+    border-top: 1px solid var(--border-color);
+    gap: 1.5rem;
+  }
+
+  .navLinks.attivo {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .accountLink { order: 1; }
+  .themeToggle { order: 2; }
+  .hamburger { order: 3; }
+}
