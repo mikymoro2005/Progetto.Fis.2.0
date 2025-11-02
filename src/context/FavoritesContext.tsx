@@ -1,5 +1,7 @@
 // src/context/FavoritesContext.tsx
-import { createContext, useContext, ReactNode } from 'react';
+
+// NOTA: Aggiunto "type" prima di ReactNode per risolvere l'errore
+import { createContext, useContext, type ReactNode } from 'react';
 import { useFavorites } from '../hooks/useFavorites';
 
 type FavoritesContextType = {
@@ -14,6 +16,7 @@ type FavoritesContextType = {
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined);
 
+// Qui il tipo per children deve usare ReactNode
 export function FavoritesProvider({ children }: { children: ReactNode }) {
   const favoritesData = useFavorites();
 

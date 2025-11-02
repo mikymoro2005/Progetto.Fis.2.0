@@ -1,19 +1,16 @@
 // src/pages/Rank.tsx
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
 import styles from "../Rank.module.css";
-// Importiamo il tipo Athlete dal nostro componente
 import { type Athlete } from './Atleti'; 
 
 const RANK_PAGE_SIZE = 50;
-
 type Gender = "Male" | "Female";
 
-// --- Props aggiunte ---
 interface RankProps {
     goToAthleteDetail: (fisCode: string) => void;
 }
-// --- Fine Props ---
 
 // --- Logica Bandiere (invariata) ---
 const countryToCode: Record<string, string> = {
@@ -24,20 +21,27 @@ const countryToCode: Record<string, string> = {
 };
 function getFlagEmoji(countryName: string): string {
   const code = countryToCode[countryName] || "";
-  if (!code) {
-    return "🏳️";
-  }
+  if (!code) return "🏳️";
   const codePoints = code
     .toUpperCase()
     .split("")
     .map((char) => 127397 + char.charCodeAt(0));
   return String.fromCodePoint(...codePoints);
 }
-// --- Fine Logica Bandiere ---
 
-// Modificato per accettare RankProps
+// NUOVA FUNZIONE per la formattazione sicura
+function formatScore(score: number | string | null | undefined): string {
+  if (score === null || score === undefined || score === 9999 || score === "9999") {
+    return "N/A";
+  }
+  const numScore = typeof score === 'string' ? parseFloat(score) : score;
+  if (isNaN(numScore)) {
+    return "N/A";
+  }
+  return numScore.toFixed(2);
+}
+
 function Rank({ goToAthleteDetail }: RankProps) {
-  // --- Stati per QUESTA pagina (Rank) ---
   const [genderFilter, setGenderFilter] = useState<Gender>("Male");
   const [athletes, setAthletes] = useState<Athlete[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,13 +50,9 @@ function Rank({ goToAthleteDetail }: RankProps) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  // --- Funzioni di Fetch per QUESTA pagina (Rank) ---
   const fetchRankAthletes = useCallback(async (offset: number, isNewFilter: boolean) => {
-    if (isNewFilter) {
-      setLoading(true);
-    } else {
-      setLoadingMore(true);
-    }
+    if (isNewFilter) setLoading(true);
+    else setLoadingMore(true);
     setError(null);
 
     const { data, error } = await supabase.rpc("get_ranked_athletes", {
@@ -75,9 +75,8 @@ function Rank({ goToAthleteDetail }: RankProps) {
     }
     setLoading(false);
     setLoadingMore(false);
-  }, [genderFilter]); // Dipende solo dal filtro
+  }, [genderFilter]);
 
-  // useEffect per il caricamento (cambio filtro)
   useEffect(() => {
     setAthletes([]);
     setHasMore(true);
@@ -85,7 +84,6 @@ function Rank({ goToAthleteDetail }: RankProps) {
     fetchRankAthletes(0, true);
   }, [genderFilter, fetchRankAthletes]);
 
-  // handleLoadMore per il bottone
   const handleLoadMore = () => {
     if (!loadingMore && hasMore) {
       const nextPageNum = pageNum + 1;
@@ -95,32 +93,25 @@ function Rank({ goToAthleteDetail }: RankProps) {
     }
   };
 
-
   return (
     <main className={styles.rankContainer}>
       <h1 className={styles.title}>Classifica Atleti</h1>
       <div className={styles.filterButtons}>
         <button
-          className={`${styles.filterButton} ${
-            genderFilter === "Male" ? styles.activeButton : ""
-          }`}
+          className={`${styles.filterButton} ${genderFilter === "Male" ? styles.activeButton : ""}`}
           onClick={() => setGenderFilter("Male")}
         >
           Uomini
         </button>
         <button
-          className={`${styles.filterButton} ${
-            genderFilter === "Female" ? styles.activeButton : ""
-          }`}
+          className={`${styles.filterButton} ${genderFilter === "Female" ? styles.activeButton : ""}`}
           onClick={() => setGenderFilter("Female")}
         >
           Donne
         </button>
       </div>
 
-      {loading && athletes.length === 0 && (
-        <p className={styles.loading}>Caricamento...</p>
-      )}
+      {loading && athletes.length === 0 && <p className={styles.loading}>Caricamento...</p>}
       {error && <p className={styles.error}>{error}</p>}
 
       {!error && (
@@ -134,48 +125,38 @@ function Rank({ goToAthleteDetail }: RankProps) {
               <div className={styles.athleteMainInfo}>
                 <div className={styles.nameBlock}>
                   <div className={styles.athleteName}>
-                    <span className={styles.position}>{index + 1}.</span>
+                    {/* NOTA: il ranking ora viene calcolato con l'index, dato che la RPC non lo fornisce */}
+                    <span className={styles.position}>{atleta.ranking || (pageNum * RANK_PAGE_SIZE + index + 1)}.</span>
                     {atleta.name}
                   </div>
                   <div className={styles.fisCode}>FIS: {atleta.fis_code}</div>
                 </div>
                 <div className={styles.infoBlock}>
-                  <span className={styles.flagEmoji}>
-                    {getFlagEmoji(atleta.country)}
-                  </span>
+                  <span className={styles.flagEmoji}>{getFlagEmoji(atleta.country)}</span>
                   <span className={styles.ageInfo}>{atleta.age} anni</span>
                 </div>
               </div>
               <div className={styles.cardScores}>
+                {/* CORREZIONE: Sostituito .toFixed(2) con la funzione sicura formatScore */}
                 <div className={`${styles.scoreItem} ${styles.slBox}`}>
                   <span className={styles.scoreLabel}>SL</span>
-                  <span className={styles.scoreValue}>
-                    {atleta.sl === 9999 ? "N/A" : atleta.sl.toFixed(2)}
-                  </span>
+                  <span className={styles.scoreValue}>{formatScore(atleta.sl)}</span>
                 </div>
                 <div className={`${styles.scoreItem} ${styles.gsBox}`}>
                   <span className={styles.scoreLabel}>GS</span>
-                  <span className={styles.scoreValue}>
-                    {atleta.gs === 9999 ? "N/A" : atleta.gs.toFixed(2)}
-                  </span>
+                  <span className={styles.scoreValue}>{formatScore(atleta.gs)}</span>
                 </div>
                 <div className={`${styles.scoreItem} ${styles.sgBox}`}>
                   <span className={styles.scoreLabel}>SG</span>
-                  <span className={styles.scoreValue}>
-                    {atleta.sg === 9999 ? "N/A" : atleta.sg.toFixed(2)}
-                  </span>
+                  <span className={styles.scoreValue}>{formatScore(atleta.sg)}</span>
                 </div>
                 <div className={`${styles.scoreItem} ${styles.dhBox}`}>
                   <span className={styles.scoreLabel}>DH</span>
-                  <span className={styles.scoreValue}>
-                    {atleta.dh === 9999 ? "N/A" : atleta.dh.toFixed(2)}
-                  </span>
+                  <span className={styles.scoreValue}>{formatScore(atleta.dh)}</span>
                 </div>
                 <div className={`${styles.scoreItem} ${styles.acBox}`}>
                   <span className={styles.scoreLabel}>AC</span>
-                  <span className={styles.scoreValue}>
-                    {atleta.ac === 9999 ? "N/A" : (atleta.ac as number).toFixed(2)}
-                  </span>
+                  <span className={styles.scoreValue}>{formatScore(atleta.ac)}</span>
                 </div>
               </div>
             </div>
