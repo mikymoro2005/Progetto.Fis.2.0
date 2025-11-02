@@ -97,6 +97,9 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [autoDetectedGender, setAutoDetectedGender] = useState<string | null>(null);
+  const [pageNum, setPageNum] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   // Stati per i filtri
   const [filters, setFilters] = useState<Filters>({
@@ -123,8 +126,12 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
   };
 
   // Funzione di fetch con i filtri
-  const fetchAthletes = useCallback(async () => {
-    setLoading(true);
+  const fetchAthletes = useCallback(async (offset: number, isNewFilter: boolean) => {
+    if (isNewFilter) {
+      setLoading(true);
+    } else {
+      setLoadingMore(true);
+    }
     setError(null);
 
     try {
@@ -132,20 +139,26 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
       if (!hasActiveFilters()) {
         const { data, error } = await supabase.rpc("get_athletes_alphabetical", {
           limit_count: ATLETI_PAGE_SIZE,
-          offset_count: 0,
+          offset_count: offset,
         });
 
         if (error) {
           console.error("Errore nel caricamento dati:", error);
           setError("Impossibile caricare i dati. Controlla la console.");
-          setAthletes([]);
+          if (isNewFilter) setAthletes([]);
         } else if (data) {
-          setAthletes(data);
+          if (data.length < ATLETI_PAGE_SIZE) {
+            setHasMore(false);
+          }
+          setAthletes((prevAthletes) =>
+            isNewFilter ? data : [...prevAthletes, ...data]
+          );
         }
       } else {
         // Altrimenti usa search_athletes_with_filters
         const params: any = {
           p_limit: ATLETI_PAGE_SIZE,
+          p_offset: offset,
         };
 
         if (filters.name) params.p_name = filters.name;
@@ -161,23 +174,32 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
         if (error) {
           console.error("Errore nel caricamento dati:", error);
           setError("Impossibile caricare i dati. Controlla la console.");
-          setAthletes([]);
+          if (isNewFilter) setAthletes([]);
         } else if (data) {
-          setAthletes(data);
+          if (data.length < ATLETI_PAGE_SIZE) {
+            setHasMore(false);
+          }
+          setAthletes((prevAthletes) =>
+            isNewFilter ? data : [...prevAthletes, ...data]
+          );
         }
       }
     } catch (err) {
       console.error("Errore imprevisto:", err);
       setError("Errore imprevisto durante il caricamento.");
-      setAthletes([]);
+      if (isNewFilter) setAthletes([]);
     }
 
     setLoading(false);
+    setLoadingMore(false);
   }, [filters]);
 
   // useEffect per il caricamento con filtri
   useEffect(() => {
-    fetchAthletes();
+    setAthletes([]);
+    setHasMore(true);
+    setPageNum(0);
+    fetchAthletes(0, true);
   }, [fetchAthletes]);
 
   // useEffect per rilevare automaticamente il genere quando si cerca per nome
@@ -256,6 +278,16 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
     });
     setAutoDetectedGender(null);
     setError(null);
+  };
+
+  // handleLoadMore per il bottone
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore) {
+      const nextPageNum = pageNum + 1;
+      const nextOffset = nextPageNum * ATLETI_PAGE_SIZE;
+      setPageNum(nextPageNum);
+      fetchAthletes(nextOffset, false);
+    }
   };
 
   // Funzione per generare la descrizione del ranking
@@ -457,6 +489,18 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
           ))}
         </div>
         </>
+      )}
+
+      {!loading && hasMore && !error && athletes.length > 0 && (
+        <div className={styles.loadMoreContainer}>
+          <button
+            className={styles.loadMoreButton}
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+          >
+            {loadingMore ? "Caricamento..." : "Carica altri"}
+          </button>
+        </div>
       )}
     </main>
   );

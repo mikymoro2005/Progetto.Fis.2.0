@@ -113,8 +113,80 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
   }
-  .submitButton:hover {
+  .submitButton:hover:not(:disabled) {
     filter: brightness(1.1);
+  }
+  .submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Divisore "oppure" */
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: var(--text-hover);
+    font-size: 0.85rem;
+  }
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--border-color);
+  }
+  .divider span {
+    padding: 0 1rem;
+  }
+
+  /* Pulsante Google */
+  .googleButton {
+    width: 100%;
+    padding: 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    color: var(--page-text);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .googleButton:hover:not(:disabled) {
+    background-color: var(--toggle-bg-hover);
+    border-color: var(--accent-color);
+  }
+  .googleButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Messaggi di errore e successo */
+  .errorMessage {
+    background-color: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: #ff3b30;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .successMessage {
+    background-color: rgba(52, 199, 89, 0.1);
+    border: 1px solid rgba(52, 199, 89, 0.3);
+    color: #34c759;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
   }
   
   /* 5. Link per cambiare (Sei già registrato?...) */

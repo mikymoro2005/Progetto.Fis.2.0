@@ -1,7 +1,7 @@
 // src/pages/Rank.tsx
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
-import styles from "../Rank.module.css"; 
+import styles from "../Rank.module.css";
 // Importiamo il tipo Athlete dal nostro componente
 import { type Athlete } from './Atleti'; 
 
@@ -36,7 +36,7 @@ function getFlagEmoji(countryName: string): string {
 // --- Fine Logica Bandiere ---
 
 // Modificato per accettare RankProps
-function Rank({ goToAthleteDetail }: RankProps) { 
+function Rank({ goToAthleteDetail }: RankProps) {
   // --- Stati per QUESTA pagina (Rank) ---
   const [genderFilter, setGenderFilter] = useState<Gender>("Male");
   const [athletes, setAthletes] = useState<Athlete[]>([]);
@@ -126,9 +126,8 @@ function Rank({ goToAthleteDetail }: RankProps) {
       {!error && (
         <div className={styles.athleteList}>
           {athletes.map((atleta, index) => (
-            // Aggiungiamo onClick e il puntatore per renderlo cliccabile
-            <div 
-                key={atleta.fis_code} 
+            <div
+                key={atleta.fis_code}
                 className={`${styles.athleteCard} ${styles.clickableCard}`}
                 onClick={() => goToAthleteDetail(atleta.fis_code)}
             >
@@ -175,7 +174,7 @@ function Rank({ goToAthleteDetail }: RankProps) {
                 <div className={`${styles.scoreItem} ${styles.acBox}`}>
                   <span className={styles.scoreLabel}>AC</span>
                   <span className={styles.scoreValue}>
-                    {atleta.ac === 9999 ? "N/A" : atleta.ac.toFixed(2)}
+                    {atleta.ac === 9999 ? "N/A" : (atleta.ac as number).toFixed(2)}
                   </span>
                 </div>
               </div>

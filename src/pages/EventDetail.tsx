@@ -244,7 +244,7 @@ function EventDetail({ codex, date, goBack, goToAthleteDetail }: EventDetailProp
           </div>
           <div className={styles.detailItem}>
             <span className={styles.detailLabel}>Genere:</span>
-            <span className={styles.detailValue}>{eventDetails.gender === "M" ? "Uomini" : "Donne"}</span>
+            <span className={styles.detailValue}>{eventDetails.gender === "Men's" ? "Uomini" : "Donne"}</span>
           </div>
         </div>
       </header>

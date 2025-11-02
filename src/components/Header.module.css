@@ -118,6 +118,101 @@
   color: var(--accent-color);
 }
 
+/* --- User Menu Styles --- */
+.userMenuContainer {
+  position: relative;
+}
+
+.userButton {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.userButton:hover {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.userEmail {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userDropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 200px;
+  z-index: 1000;
+  animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.userInfo {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.userEmailFull {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-hover);
+  word-break: break-all;
+}
+
+.logoutButton {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  color: var(--accent-color);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.logoutButton:hover {
+  background-color: var(--toggle-bg-hover);
+}
+
+/* Mobile: Nascondi l'email, mostra solo l'icona */
+@media (max-width: 768px) {
+  .userEmail {
+    display: none;
+  }
+
+  .userButton {
+    padding: 0.5rem;
+  }
+}
+
 
 /* --- 6. STILI PER HAMBURGER & MOBILE --- */
 .hamburger {
