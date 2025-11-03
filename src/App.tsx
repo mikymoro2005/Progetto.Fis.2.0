@@ -12,6 +12,7 @@ import Atleti from "./pages/Atleti";
 import Preferiti from "./pages/Preferiti";
 import AthleteDetail from "./pages/AthleteDetail";
 import EventDetail from "./pages/EventDetail";
+import Confronto from "./pages/Confronto";
 
 // 1. Definiamo tutti i tipi di pagina
 export type Page = "rank" | "atleti" | "preferiti" | "confronto" | "chi-siamo" | "athlete-detail" | "event-detail";
@@ -242,12 +243,7 @@ function App() {
                     <p>Dati evento non trovati. <a onClick={goBack} style={{cursor: 'pointer'}}>Torna indietro</a></p>
                 </main>;
       case "confronto":
-        return (
-          <main style={{ padding: '2rem', textAlign: 'center', minHeight: '60vh' }}>
-            <h1 style={{color: 'var(--page-text)'}}>Confronto</h1>
-            <p>Pagina in costruzione...</p>
-          </main>
-        );
+        return <Confronto />;
       case "chi-siamo":
         return (
           <main style={{ padding: '2rem', textAlign: 'center', minHeight: '60vh' }}>
