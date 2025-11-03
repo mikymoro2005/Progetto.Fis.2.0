@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
 import { FavoritesProvider } from "./context/FavoritesContext";
+import { supabase } from "./supabaseClient";
 // Importiamo tutte le pagine e il dettaglio
 import Rank from "./pages/Rank";
 import Atleti from "./pages/Atleti";
@@ -64,6 +65,22 @@ function App() {
     eventCodex: string | null;
     eventDate: string | null;
   } | null>(null);
+
+  // NUOVO: Listener per i cambiamenti di autenticazione
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('App - Auth state changed:', event, session?.user);
+      
+      // Se l'utente si disconnette, reindirizza a rank
+      if (event === 'SIGNED_OUT') {
+        console.log('App - Utente disconnesso, redirect a rank');
+        setCurrentPage('rank');
+        window.location.hash = 'rank';
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // --- Funzioni di Routing ---
 

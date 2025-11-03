@@ -1,16 +1,23 @@
 // src/supabaseClient.ts
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+
+// Evita istanze multiple in sviluppo (a causa dell'hot-reloading)
+const globalForSupabase = globalThis as unknown as {
+  supabase: SupabaseClient | undefined;
+};
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// AGGIUNGI QUESTO BLOCCO PER IL DEBUG
-console.log("Supabase URL letto:", supabaseUrl);
-console.log("Supabase Anon Key letta:", supabaseAnonKey ? "Trovata" : "NON TROVATA");
-// FINE BLOCCO DEBUG
-
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Errore: variabili d'ambiente non trovate.");
+  throw new Error("Errore: variabili d'ambiente Supabase non trovate.");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Crea il client solo se non esiste già
+export const supabase = globalForSupabase.supabase ?? createClient(supabaseUrl, supabaseAnonKey);
+
+// In sviluppo, salva l'istanza nel contesto globale
+if (import.meta.env.DEV) {
+  globalForSupabase.supabase = supabase;
+}
+

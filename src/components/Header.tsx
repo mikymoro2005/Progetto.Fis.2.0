@@ -1,4 +1,4 @@
-import { useState, type Dispatch, type SetStateAction, useEffect } from 'react'; // Aggiunto useEffect
+import { useState, type Dispatch, type SetStateAction, useEffect, useRef } from 'react';
 // Importiamo il tipo Page dall'App principale
 import { type Page } from '../App';
 import { supabase } from '../supabaseClient';
@@ -19,6 +19,9 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
   // Stato per l'utente loggato
   const [user, setUser] = useState<User | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  // Ref per il menu utente
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Logica per il tema (luce/buio)
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -41,7 +44,7 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
       }
     }
     localStorage.setItem('theme', theme);
-  }, [theme]); // Si esegue ogni volta che 'theme' cambia
+  }, [theme]);
 
   // Controlla lo stato dell'autenticazione
   useEffect(() => {
@@ -51,12 +54,35 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
     });
 
     // Ascolta i cambiamenti dello stato auth
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Header - Auth event:', event);
       setUser(session?.user ?? null);
+      
+      // Chiudi il menu quando si fa logout
+      if (event === 'SIGNED_OUT') {
+        setUserMenuOpen(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Gestisci click fuori dal menu utente per chiuderlo
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+
+    if (userMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [userMenuOpen]);
 
   // Funzioni
   const toggleMenu = () => {
@@ -68,16 +94,33 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
   };
 
   const handleLinkClick = (page: Page) => {
-    // 1. Aggiorna lo stato di React
     setPage(page);
-    // 2. AGGIUNTO: Aggiorna l'hash dell'URL per la persistenza
     window.location.hash = `#${page}`;
-    setMenuAperto(false); // Chiude il menu mobile dopo il click
+    setMenuAperto(false);
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    console.log('Header - Inizio logout (con workaround)');
     setUserMenuOpen(false);
+    
+    // Chiamiamo signOut ma non attendiamo il completamento, per evitare blocchi
+    supabase.auth.signOut();
+
+    // Rimuoviamo manualmente il token di autenticazione da localStorage
+    try {
+      const supabaseAuthTokenKey = Object.keys(localStorage).find(key => key.startsWith('sb-') && key.endsWith('-auth-token'));
+      if (supabaseAuthTokenKey) {
+        console.log(`Header - Rimozione manuale del token: ${supabaseAuthTokenKey}`);
+        localStorage.removeItem(supabaseAuthTokenKey);
+      } else {
+        console.warn('Header - Chiave del token di autenticazione Supabase non trovata in localStorage.');
+      }
+    } catch (error) {
+      console.error('Header - Errore durante la rimozione manuale del token:', error);
+    }
+    
+    console.log('Header - Redirect forzato alla home page...');
+    window.location.href = '/';
   };
 
   const toggleUserMenu = () => {
@@ -124,11 +167,12 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
 
           {/* Icona Account/Login o User Menu */}
           {user ? (
-            <div className={styles.userMenuContainer}>
+            <div className={styles.userMenuContainer} ref={userMenuRef}>
               <button
                 className={styles.userButton}
                 onClick={toggleUserMenu}
                 aria-label="Menu utente"
+                type="button"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user">
                   <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -145,6 +189,7 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
                   <button
                     className={styles.logoutButton}
                     onClick={handleLogout}
+                    type="button"
                   >
                     Logout
                   </button>
@@ -156,6 +201,7 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
               className={styles.accountLink}
               onClick={openModal}
               aria-label="Accedi o Registrati"
+              type="button"
             >
               {/* Omino SVG */}
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user">
@@ -169,6 +215,7 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
             className={styles.themeToggle} 
             onClick={toggleTheme} 
             aria-label={`Attiva tema ${theme === 'dark' ? 'chiaro' : 'scuro'}`}
+            type="button"
           >
             {/* Sole/Luna SVG */}
             {theme === 'dark' ? (
@@ -183,7 +230,7 @@ function Header({ openModal, currentPage, setPage }: HeaderProps) {
           </button>
         
           {/* Bottone Hamburger (visibile solo su mobile) */}
-          <button className={styles.hamburger} onClick={toggleMenu} aria-label="Apri menu">
+          <button className={styles.hamburger} onClick={toggleMenu} aria-label="Apri menu" type="button">
             <span className={styles.hamburgerLinea}></span>
             <span className={styles.hamburgerLinea}></span>
             <span className={styles.hamburgerLinea}></span>
