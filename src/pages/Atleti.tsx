@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
 import styles from "../Rank.module.css";
 import filterStyles from "./Atleti.module.css";
+import type { User } from '@supabase/supabase-js';
 
 const ATLETI_PAGE_SIZE = 25;
 
@@ -100,6 +101,7 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
   const [pageNum, setPageNum] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [user, setUser] = useState<User | null | undefined>(undefined);
 
   // Stati per i filtri
   const [filters, setFilters] = useState<Filters>({
@@ -124,6 +126,19 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
       filters.disciplines.length > 0
     );
   };
+
+  // Aggiunto useEffect per tracciare lo stato di autenticazione
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    checkUser();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Funzione di fetch con i filtri
   const fetchAthletes = useCallback(async (offset: number, isNewFilter: boolean) => {
@@ -192,15 +207,18 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
 
     setLoading(false);
     setLoadingMore(false);
-  }, [filters]);
+  }, [filters, user]);
 
-  // useEffect per il caricamento con filtri
+  // useEffect per il caricamento con filtri - modificato per dipendere da 'user'
   useEffect(() => {
+    // Non eseguire il fetch finché lo stato utente non è definito
+    if (user === undefined) return;
+
     setAthletes([]);
     setHasMore(true);
     setPageNum(0);
     fetchAthletes(0, true);
-  }, [fetchAthletes]);
+  }, [fetchAthletes, user]);
 
   // useEffect per rilevare automaticamente il genere quando si cerca per nome
   useEffect(() => {
