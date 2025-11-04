@@ -20,4 +20,3 @@ export const supabase = globalForSupabase.supabase ?? createClient(supabaseUrl, 
 if (import.meta.env.DEV) {
   globalForSupabase.supabase = supabase;
 }
-

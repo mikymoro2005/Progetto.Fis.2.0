@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
 import styles from "../Rank.module.css";
 import { type Athlete } from './Atleti'; 
-import type { User } from '@supabase/supabase-js';
 
 const RANK_PAGE_SIZE = 50;
 type Gender = "Male" | "Female";
@@ -50,20 +49,6 @@ function Rank({ goToAthleteDetail }: RankProps) {
   const [pageNum, setPageNum] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [user, setUser] = useState<User | null | undefined>(undefined);
-
-  // Aggiunto useEffect per tracciare lo stato di autenticazione
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    checkUser();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
 
   const fetchRankAthletes = useCallback(async (offset: number, isNewFilter: boolean) => {
     if (isNewFilter) setLoading(true);
@@ -90,18 +75,14 @@ function Rank({ goToAthleteDetail }: RankProps) {
     }
     setLoading(false);
     setLoadingMore(false);
-  }, [genderFilter, user]);
+  }, [genderFilter]);
 
-  // Modificato per dipendere anche da 'user'
   useEffect(() => {
-    // Non eseguire il fetch finché lo stato utente non è definito
-    if (user === undefined) return;
-
     setAthletes([]);
     setHasMore(true);
     setPageNum(0);
     fetchRankAthletes(0, true);
-  }, [genderFilter, fetchRankAthletes, user]);
+  }, [genderFilter, fetchRankAthletes]);
 
   const handleLoadMore = () => {
     if (!loadingMore && hasMore) {

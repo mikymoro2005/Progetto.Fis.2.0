@@ -249,64 +249,75 @@ function EventDetail({ codex, date, goBack, goToAthleteDetail }: EventDetailProp
         </div>
       </header>
 
-      {/* Classifica Finiti */}
+      {/* ======================================================= */}
+      {/* === MODIFICA: Classifica Finiti / Gara Cancellata === */}
+      {/* ======================================================= */}
       <section className={styles.resultsSection}>
-        <h2>Classifica ({finishedResults.length} atleti)</h2>
-
+        
         {finishedResults.length === 0 ? (
-          <p className={styles.noResults}>Nessun risultato disponibile.</p>
+          <>
+            {/* Se non ci sono risultati, mostra "Gara Cancellata" */}
+            <h2>Gara Cancellata</h2>
+            <p className={styles.noResults}></p>
+          </>
         ) : (
-          <div className={styles.resultsTable} style={{ ['--desktop-grid' as any]: gridTemplateColumns }}>
-            {/* Header (Desktop) */}
-            <div className={styles.resultHeader}>
-              <div>Pos.</div>
-              <div>Pett.</div>
-              <div>Nome</div>
-              <div>Paese</div>
-              {hasRun1 && <div>Run 1</div>}
-              {hasRun2 && <div>Run 2</div>}
-              {hasRun3 && <div>Run 3</div>}
-              {hasRun4 && <div>Run 4</div>}
-              <div>Tempo</div>
-              <div>Distacco</div>
-              <div>Punti FIS</div>
-              <div>Punti WC</div>
-            </div>
-
-            {finishedResults.map((result, index) => (
-              <div
-                key={index}
-                className={styles.resultRow}
-                onClick={() => goToAthleteDetail(result.fis_code)}
-              >
-                <div className={styles.resultRank}>{result.rank}</div>
-                <div className={styles.resultBib}>{result.bib}</div>
-                <div className={styles.resultName}>
-                  {result.athlete_name}
-                  <span className={styles.resultFisCode}>FIS: {result.fis_code}</span>
-                </div>
-                <div className={styles.resultCountry}>
-                  {getFlagEmoji(result.country)} {result.country}
-                </div>
-                {hasRun1 && <div className={styles.resultRun1}>{result.run1 || "-"}</div>}
-                {hasRun2 && <div className={styles.resultRun2}>{result.run2 || "-"}</div>}
-                {hasRun3 && <div className={styles.resultRun3}>{result.run3 || "-"}</div>}
-                {hasRun4 && <div className={styles.resultRun4}>{result.run4 || "-"}</div>}
-                <div className={styles.resultTime}>{calculateTime(result.total_time, result.diff_time, result.rank)}</div>
-                <div className={styles.resultDiff}>{result.rank === "1" ? "0.00" : (result.diff_time || "-")}</div>
-                <div className={styles.resultFisPoints}>
-                  {result.fis_points ? parseFloat(result.fis_points).toFixed(2) : "-"}
-                </div>
-                <div className={styles.resultCupPoints}>
-                  {result.cup_points ? parseInt(result.cup_points) : "-"}
-                </div>
+          <>
+            {/* Altrimenti, mostra la classifica normale */}
+            <h2>Classifica ({finishedResults.length} atleti)</h2>
+            <div className={styles.resultsTable} style={{ ['--desktop-grid' as any]: gridTemplateColumns }}>
+              {/* Header (Desktop) */}
+              <div className={styles.resultHeader}>
+                <div>Pos.</div>
+                <div>Pett.</div>
+                <div>Nome</div>
+                <div>Paese</div>
+                {hasRun1 && <div>Run 1</div>}
+                {hasRun2 && <div>Run 2</div>}
+                {hasRun3 && <div>Run 3</div>}
+                {hasRun4 && <div>Run 4</div>}
+                <div>Tempo</div>
+                <div>Distacco</div>
+                <div>Punti FIS</div>
+                <div>Punti WC</div>
               </div>
-            ))}
-          </div>
+
+              {finishedResults.map((result, index) => (
+                <div
+                  key={index}
+                  className={styles.resultRow}
+                  onClick={() => goToAthleteDetail(result.fis_code)}
+                >
+                  <div className={styles.resultRank}>{result.rank}</div>
+                  <div className={styles.resultBib}>{result.bib}</div>
+                  <div className={styles.resultName}>
+                    {result.athlete_name}
+                    <span className={styles.resultFisCode}>FIS: {result.fis_code}</span>
+                  </div>
+                  <div className={styles.resultCountry}>
+                    {getFlagEmoji(result.country)} {result.country}
+                  </div>
+                  {hasRun1 && <div className={styles.resultRun1}>{result.run1 || "-"}</div>}
+                  {hasRun2 && <div className={styles.resultRun2}>{result.run2 || "-"}</div>}
+                  {hasRun3 && <div className={styles.resultRun3}>{result.run3 || "-"}</div>}
+                  {hasRun4 && <div className={styles.resultRun4}>{result.run4 || "-"}</div>}
+                  <div className={styles.resultTime}>{calculateTime(result.total_time, result.diff_time, result.rank)}</div>
+                  <div className={styles.resultDiff}>{result.rank === "1" ? "0.00" : (result.diff_time || "-")}</div>
+                  <div className={styles.resultFisPoints}>
+                    {result.fis_points ? parseFloat(result.fis_points).toFixed(2) : "-"}
+                  </div>
+                  <div className={styles.resultCupPoints}>
+                    {result.cup_points ? parseInt(result.cup_points) : "-"}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
       {/* Non Arrivati / Squalificati */}
+      {/* Questa sezione viene mostrata anche se la gara è cancellata, 
+          perché potrebbero esserci DNF/DSQ anche se nessuno ha finito. */}
       {dnfResults.length > 0 && (
         <section className={styles.dnfSection}>
           <h2>Non Arrivati / Squalificati ({dnfResults.length})</h2>

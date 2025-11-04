@@ -3,33 +3,28 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "../supabaseClient";
 import styles from "../Rank.module.css";
 import filterStyles from "./Atleti.module.css";
-import type { User } from '@supabase/supabase-js';
 
 const ATLETI_PAGE_SIZE = 25;
 
-// === MODIFICA QUI: Aggiunto 'export' al tipo Athlete ===
 export type Athlete = {
   fis_code: string;
   name: string;
   country: string;
-  age: number | string;  // INTEGER o VARCHAR
-  dh: number | string;   // FLOAT o VARCHAR
-  sl: number | string;   // FLOAT o VARCHAR
-  gs: number | string;   // FLOAT o VARCHAR
-  sg: number | string;   // FLOAT o VARCHAR
-  ac: number | string;   // FLOAT o VARCHAR
+  age: number | string;
+  dh: number | string;
+  sl: number | string;
+  gs: number | string;
+  sg: number | string;
+  ac: number | string;
   gender?: string;
   total_points?: number;
   ranking?: number;
 };
 
-// --- Props aggiunte ---
 interface AtletiProps {
-    goToAthleteDetail: (fisCode: string) => void;
+  goToAthleteDetail: (fisCode: string) => void;
 }
-// --- Fine Props ---
 
-// Tipo per i filtri
 type Filters = {
   name: string;
   fisCode: string;
@@ -40,13 +35,13 @@ type Filters = {
   disciplines: string[];
 };
 
-// --- Logica Bandiere (Copiata) ---
 const countryToCode: Record<string, string> = {
   Austria: "AT", France: "FR", Switzerland: "CH", Canada: "CA",
   Argentina: "AR", "United States Of America": "US", Czechia: "CZ",
   Germany: "DE", Italy: "IT", Norway: "NO", Slovenia: "SI",
   Slovakia: "SK",
 };
+
 function getFlagEmoji(countryName: string): string {
   const code = countryToCode[countryName] || "";
   if (!code) {
@@ -58,9 +53,7 @@ function getFlagEmoji(countryName: string): string {
     .map((char) => 127397 + char.charCodeAt(0));
   return String.fromCodePoint(...codePoints);
 }
-// --- Fine Logica Bandiere ---
 
-// Lista completa dei paesi
 const COUNTRIES = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Argentina", "Armenia", "Australia", "Austria",
   "Azerbaijan", "Belarus", "Belgium", "Benin", "Bhutan", "Bosnia And Herzegovina", "Brazil",
@@ -79,20 +72,28 @@ const COUNTRIES = [
   "Venezuela"
 ];
 
-// --- Funzione Helper per formattare i punteggi ---
 function formatScore(score: number | string | null | undefined): string {
-  if (!score || score === "9999" || score === "null" || score === 9999) {
+  // Se è null o undefined, mostra N/A
+  if (score === null || score === undefined) {
     return "N/A";
   }
+  
+  // Se è la stringa "9999" o "null", mostra N/A
+  if (score === "9999" || score === "null") {
+    return "N/A";
+  }
+  
   const numScore = typeof score === "number" ? score : parseFloat(score);
+  
+  // Se non è un numero valido o è >= 9999, mostra N/A
   if (isNaN(numScore) || numScore >= 9999) {
     return "N/A";
   }
+  
+  // Altrimenti mostra il punteggio formattato (anche se è 0)
   return numScore.toFixed(2);
 }
-// --- Fine Funzione Helper ---
 
-// Modificato per accettare AtletiProps
 function Atleti({ goToAthleteDetail }: AtletiProps) {
   const [athletes, setAthletes] = useState<Athlete[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,9 +102,7 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
   const [pageNum, setPageNum] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [user, setUser] = useState<User | null | undefined>(undefined);
 
-  // Stati per i filtri
   const [filters, setFilters] = useState<Filters>({
     name: "",
     fisCode: "",
@@ -114,7 +113,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
     disciplines: [],
   });
 
-  // Verifica se ci sono filtri attivi
   const hasActiveFilters = () => {
     return (
       filters.name !== "" ||
@@ -127,20 +125,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
     );
   };
 
-  // Aggiunto useEffect per tracciare lo stato di autenticazione
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    checkUser();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Funzione di fetch con i filtri
   const fetchAthletes = useCallback(async (offset: number, isNewFilter: boolean) => {
     if (isNewFilter) {
       setLoading(true);
@@ -150,7 +134,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
     setError(null);
 
     try {
-      // Se non ci sono filtri attivi, usa get_athletes_alphabetical
       if (!hasActiveFilters()) {
         const { data, error } = await supabase.rpc("get_athletes_alphabetical", {
           limit_count: ATLETI_PAGE_SIZE,
@@ -170,27 +153,34 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
           );
         }
       } else {
-        // Altrimenti usa search_athletes_with_filters
+        // Costruzione parametri per search_athletes_with_filters
         const params: any = {
           p_limit: ATLETI_PAGE_SIZE,
-          p_offset: offset,
+          p_offset: offset, // Aggiungi offset
         };
 
+        // Aggiungi solo i parametri definiti
         if (filters.name) params.p_name = filters.name;
         if (filters.fisCode) params.p_fis_code = filters.fisCode;
         if (filters.ageMin) params.p_age_min = parseInt(filters.ageMin);
         if (filters.ageMax) params.p_age_max = parseInt(filters.ageMax);
         if (filters.country) params.p_country = filters.country;
         if (filters.gender) params.p_gender = filters.gender;
-        if (filters.disciplines.length > 0) params.p_disciplines = filters.disciplines;
+        if (filters.disciplines.length > 0) {
+          params.p_disciplines = filters.disciplines;
+        }
+
+        console.log("Chiamata search_athletes_with_filters con params:", params);
 
         const { data, error } = await supabase.rpc("search_athletes_with_filters", params);
 
         if (error) {
           console.error("Errore nel caricamento dati:", error);
-          setError("Impossibile caricare i dati. Controlla la console.");
+          setError(`Errore: ${error.message}`);
           if (isNewFilter) setAthletes([]);
         } else if (data) {
+          console.log("Dati ricevuti:", data.length, "atleti");
+          
           if (data.length < ATLETI_PAGE_SIZE) {
             setHasMore(false);
           }
@@ -207,35 +197,27 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
 
     setLoading(false);
     setLoadingMore(false);
-  }, [filters, user]);
+  }, [filters]);
 
-  // useEffect per il caricamento con filtri - modificato per dipendere da 'user'
   useEffect(() => {
-    // Non eseguire il fetch finché lo stato utente non è definito
-    if (user === undefined) return;
-
     setAthletes([]);
     setHasMore(true);
     setPageNum(0);
     fetchAthletes(0, true);
-  }, [fetchAthletes, user]);
+  }, [fetchAthletes]);
 
-  // useEffect per rilevare automaticamente il genere quando si cerca per nome
   useEffect(() => {
     if (athletes.length > 0 && (filters.name || filters.fisCode)) {
-      // Verifica se tutti gli atleti hanno lo stesso genere
       const genders = athletes.map(a => a.gender).filter(g => g);
       const uniqueGenders = [...new Set(genders)];
 
       if (uniqueGenders.length === 1 && uniqueGenders[0]) {
         const detectedGender = uniqueGenders[0];
 
-        // Imposta il genere auto-rilevato se non è già impostato
         if (autoDetectedGender !== detectedGender) {
           setAutoDetectedGender(detectedGender);
         }
 
-        // Se il filtro genere non è già impostato a questo valore, impostalo
         if (filters.gender !== detectedGender) {
           setFilters(prev => ({ ...prev, gender: detectedGender }));
         }
@@ -245,7 +227,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
         }
       }
     } else {
-      // Se non c'è ricerca per nome/fis, resetta il genere auto-rilevato
       if (autoDetectedGender !== null) {
         setAutoDetectedGender(null);
       }
@@ -253,18 +234,14 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [athletes, filters.name, filters.fisCode]);
 
-  // Handler per i filtri
   const handleFilterChange = (key: keyof Filters, value: string) => {
-    // Se si cancella il nome o fis_code, resetta il genere auto-rilevato
     if ((key === "name" || key === "fisCode") && !value) {
       setAutoDetectedGender(null);
     }
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
-  // Handler speciale per il cambio di genere
   const handleGenderChange = (newGender: string) => {
-    // Se c'è un genere auto-rilevato e l'utente prova a cambiare a un genere diverso
     if (autoDetectedGender && newGender && newGender !== autoDetectedGender) {
       const genderLabel = autoDetectedGender === "Male" ? "uomo" : "donna";
       setError(`L'atleta cercato è ${genderLabel}. Non puoi filtrare per un genere diverso.`);
@@ -298,7 +275,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
     setError(null);
   };
 
-  // handleLoadMore per il bottone
   const handleLoadMore = () => {
     if (!loadingMore && hasMore) {
       const nextPageNum = pageNum + 1;
@@ -308,7 +284,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
     }
   };
 
-  // Funzione per generare la descrizione del ranking
   const getRankingContext = () => {
     const parts: string[] = [];
 
@@ -335,11 +310,9 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
 
   return (
     <main className={styles.rankContainer}>
-      {/* Sezione Filtri */}
       <div className={filterStyles.filtersContainer}>
         <h2 className={filterStyles.filtersTitle}>Filtri Atleti</h2>
 
-        {/* Filtri Testo */}
         <div className={filterStyles.textFilters}>
           <input
             type="text"
@@ -369,7 +342,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
           </select>
         </div>
 
-        {/* Filtri Età */}
         <div className={filterStyles.ageFilters}>
           <input
             type="number"
@@ -388,7 +360,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
           />
         </div>
 
-        {/* Filtri Genere */}
         <div className={filterStyles.genderFilters}>
           <button
             className={`${filterStyles.genderButton} ${filters.gender === "Male" ? filterStyles.activeGender : ""} ${autoDetectedGender === "Male" ? filterStyles.autoDetected : ""}`}
@@ -406,7 +377,6 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
           </button>
         </div>
 
-        {/* Filtri Specialità */}
         <div className={filterStyles.disciplineFilters}>
           {["sl", "gs", "sg", "dh", "ac"].map((disc) => (
             <button
@@ -421,13 +391,11 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
           ))}
         </div>
 
-        {/* Bottone Reset */}
         <button className={filterStyles.resetButton} onClick={resetFilters}>
           Reset Filtri
         </button>
       </div>
 
-      {/* Lista Atleti */}
       {loading && (
         <p className={styles.loading}>Caricamento...</p>
       )}
@@ -439,73 +407,72 @@ function Atleti({ goToAthleteDetail }: AtletiProps) {
 
       {!error && athletes.length > 0 && (
         <>
-          {/* Indicatore Contesto Ranking */}
           {hasActiveFilters() && (
             <div className={filterStyles.rankingContext}>
               {getRankingContext()}
             </div>
           )}
           <div className={styles.athleteList}>
-          {athletes.map((atleta) => (
-            <div
-              key={atleta.fis_code}
-              className={`${styles.athleteCard} ${styles.clickableCard}`}
-              onClick={() => goToAthleteDetail(atleta.fis_code)}
-            >
-              <div className={styles.athleteMainInfo}>
-                <div className={styles.nameBlock}>
-                  <div className={styles.athleteName}>
-                    <span className={styles.position}>
-                      {atleta.ranking || "N/A"}.
-                    </span>
-                    {atleta.name}
+            {athletes.map((atleta) => (
+              <div
+                key={atleta.fis_code}
+                className={`${styles.athleteCard} ${styles.clickableCard}`}
+                onClick={() => goToAthleteDetail(atleta.fis_code)}
+              >
+                <div className={styles.athleteMainInfo}>
+                  <div className={styles.nameBlock}>
+                    <div className={styles.athleteName}>
+                      <span className={styles.position}>
+                        {atleta.ranking || "N/A"}.
+                      </span>
+                      {atleta.name}
+                    </div>
+                    <div className={styles.fisCode}>FIS: {atleta.fis_code}</div>
                   </div>
-                  <div className={styles.fisCode}>FIS: {atleta.fis_code}</div>
+                  <div className={styles.infoBlock}>
+                    <span className={styles.flagEmoji}>
+                      {getFlagEmoji(atleta.country)}
+                    </span>
+                    <span className={styles.ageInfo}>
+                      {typeof atleta.age === 'number' ? atleta.age : parseInt(atleta.age) || atleta.age} anni
+                    </span>
+                  </div>
                 </div>
-                <div className={styles.infoBlock}>
-                  <span className={styles.flagEmoji}>
-                    {getFlagEmoji(atleta.country)}
-                  </span>
-                  <span className={styles.ageInfo}>
-                    {typeof atleta.age === 'number' ? atleta.age : parseInt(atleta.age) || atleta.age} anni
-                  </span>
+                <div className={styles.cardScores}>
+                  <div className={`${styles.scoreItem} ${styles.slBox}`}>
+                    <span className={styles.scoreLabel}>SL</span>
+                    <span className={styles.scoreValue}>
+                      {formatScore(atleta.sl)}
+                    </span>
+                  </div>
+                  <div className={`${styles.scoreItem} ${styles.gsBox}`}>
+                    <span className={styles.scoreLabel}>GS</span>
+                    <span className={styles.scoreValue}>
+                      {formatScore(atleta.gs)}
+                    </span>
+                  </div>
+                  <div className={`${styles.scoreItem} ${styles.sgBox}`}>
+                    <span className={styles.scoreLabel}>SG</span>
+                    <span className={styles.scoreValue}>
+                      {formatScore(atleta.sg)}
+                    </span>
+                  </div>
+                  <div className={`${styles.scoreItem} ${styles.dhBox}`}>
+                    <span className={styles.scoreLabel}>DH</span>
+                    <span className={styles.scoreValue}>
+                      {formatScore(atleta.dh)}
+                    </span>
+                  </div>
+                  <div className={`${styles.scoreItem} ${styles.acBox}`}>
+                    <span className={styles.scoreLabel}>AC</span>
+                    <span className={styles.scoreValue}>
+                      {formatScore(atleta.ac)}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <div className={styles.cardScores}>
-                <div className={`${styles.scoreItem} ${styles.slBox}`}>
-                  <span className={styles.scoreLabel}>SL</span>
-                  <span className={styles.scoreValue}>
-                    {formatScore(atleta.sl)}
-                  </span>
-                </div>
-                <div className={`${styles.scoreItem} ${styles.gsBox}`}>
-                  <span className={styles.scoreLabel}>GS</span>
-                  <span className={styles.scoreValue}>
-                    {formatScore(atleta.gs)}
-                  </span>
-                </div>
-                <div className={`${styles.scoreItem} ${styles.sgBox}`}>
-                  <span className={styles.scoreLabel}>SG</span>
-                  <span className={styles.scoreValue}>
-                    {formatScore(atleta.sg)}
-                  </span>
-                </div>
-                <div className={`${styles.scoreItem} ${styles.dhBox}`}>
-                  <span className={styles.scoreLabel}>DH</span>
-                  <span className={styles.scoreValue}>
-                    {formatScore(atleta.dh)}
-                  </span>
-                </div>
-                <div className={`${styles.scoreItem} ${styles.acBox}`}>
-                  <span className={styles.scoreLabel}>AC</span>
-                  <span className={styles.scoreValue}>
-                    {formatScore(atleta.ac)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         </>
       )}
 

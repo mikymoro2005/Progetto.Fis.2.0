@@ -2,26 +2,24 @@
 import { useState, useCallback, useEffect } from "react";
 import "./App.css";
 import Header from "./components/Header";
-import AuthModal from "./components/AuthModal";
 import Footer from "./components/Footer";
-import { FavoritesProvider } from "./context/FavoritesContext";
-import { supabase } from "./supabaseClient";
 // Importiamo tutte le pagine e il dettaglio
 import Rank from "./pages/Rank";
+import Gare from "./pages/Gare";
+import type { Filters, ViewMode } from "./pages/Gare"; // <-- CORRETTO
 import Atleti from "./pages/Atleti";
-import Preferiti from "./pages/Preferiti";
 import AthleteDetail from "./pages/AthleteDetail";
 import EventDetail from "./pages/EventDetail";
 import Confronto from "./pages/Confronto";
 
 // 1. Definiamo tutti i tipi di pagina
-export type Page = "rank" | "atleti" | "preferiti" | "confronto" | "chi-siamo" | "athlete-detail" | "event-detail";
+export type Page = "rank" | "gare" | "atleti" | "confronto" | "chi-siamo" | "athlete-detail" | "event-detail";
 
 function App() {
   // Parsing iniziale dell'hash per determinare la pagina e i parametri
   const parseInitialHash = () => {
     const hash = window.location.hash.slice(1);
-    const validPages: Page[] = ["rank", "atleti", "preferiti", "confronto", "chi-siamo"];
+    const validPages: Page[] = ["rank", "gare", "atleti", "confronto", "chi-siamo"];
 
     // Se l'hash corrisponde a una pagina principale
     if (validPages.includes(hash as Page)) {
@@ -52,113 +50,77 @@ function App() {
 
   // Stati globali dell'App
   const [currentPage, setCurrentPage] = useState<Page>(initialState.page);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // STATI per la pagina di dettaglio
   const [athleteDetailFisCode, setAthleteDetailFisCode] = useState<string | null>(initialState.athleteFisCode);
   const [eventDetailCodex, setEventDetailCodex] = useState<string | null>(initialState.eventCodex);
   const [eventDetailDate, setEventDetailDate] = useState<string | null>(initialState.eventDate);
+  const [previousPage, setPreviousPage] = useState<Page | null>(null); // Semplificato
 
-  // STATO per la pagina precedente (history)
-  const [previousPage, setPreviousPage] = useState<{
-    page: Page;
-    athleteFisCode: string | null;
-    eventCodex: string | null;
-    eventDate: string | null;
-  } | null>(null);
 
-  // NUOVO: Listener per i cambiamenti di autenticazione
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('App - Auth state changed:', event, session?.user);
-      
-      // Se l'utente si disconnette, reindirizza a rank
-      if (event === 'SIGNED_OUT') {
-        console.log('App - Utente disconnesso, redirect a rank');
-        setCurrentPage('rank');
-        window.location.hash = 'rank';
-      }
-    });
+  // =======================================================
+  // === MODIFICA: STATO SPOSTATO DA GARE.TSX ===
+  // =======================================================
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [viewMode, setViewMode] = useState<ViewMode>("daily");
+  const [filters, setFilters] = useState<Filters>({
+    gender: "",
+    disciplines: [],
+    country: "",
+  });
+  // =======================================================
 
-    return () => subscription.unsubscribe();
-  }, []);
 
   // --- Funzioni di Routing ---
 
   // 2. Funzione per navigare al dettaglio atleta
   const goToAthleteDetail = useCallback((fisCode: string) => {
-    // Salva lo stato corrente prima di navigare
-    setPreviousPage({
-      page: currentPage,
-      athleteFisCode: athleteDetailFisCode,
-      eventCodex: eventDetailCodex,
-      eventDate: eventDetailDate,
-    });
-
+    setPreviousPage(currentPage); // Salva la pagina corrente (es. "gare")
     setAthleteDetailFisCode(fisCode);
     setCurrentPage("athlete-detail");
     window.location.hash = `athlete-${fisCode}`;
-  }, [currentPage, athleteDetailFisCode, eventDetailCodex, eventDetailDate]);
+    window.scrollTo(0, 0); // <-- MODIFICA: Risolto problema scroll
+  }, [currentPage]); // Rimosse dipendenze inutili
 
   // 3. Funzione per navigare al dettaglio evento
   const goToEventDetail = useCallback((codex: string, date: string) => {
-    // Salva lo stato corrente prima di navigare
-    setPreviousPage({
-      page: currentPage,
-      athleteFisCode: athleteDetailFisCode,
-      eventCodex: eventDetailCodex,
-      eventDate: eventDetailDate,
-    });
-
+    setPreviousPage(currentPage); // Salva la pagina corrente (es. "gare")
     setEventDetailCodex(codex);
     setEventDetailDate(date);
     setCurrentPage("event-detail");
     window.location.hash = `event-${codex}-${date}`;
-  }, [currentPage, athleteDetailFisCode, eventDetailCodex, eventDetailDate]);
+    window.scrollTo(0, 0); // <-- MODIFICA: Risolto problema scroll
+  }, [currentPage]); // Rimosse dipendenze inutili
 
   // 4. Funzione per tornare indietro
   const goBack = useCallback(() => {
+    // Se ero su un dettaglio, torna alla pagina precedente salvata (es. 'gare')
     if (previousPage) {
-      // Torna alla pagina precedente salvata
-      setCurrentPage(previousPage.page);
-      setAthleteDetailFisCode(previousPage.athleteFisCode);
-      setEventDetailCodex(previousPage.eventCodex);
-      setEventDetailDate(previousPage.eventDate);
-
-      // Aggiorna l'hash
-      if (previousPage.page === "athlete-detail" && previousPage.athleteFisCode) {
-        window.location.hash = `athlete-${previousPage.athleteFisCode}`;
-      } else if (previousPage.page === "event-detail" && previousPage.eventCodex && previousPage.eventDate) {
-        window.location.hash = `event-${previousPage.eventCodex}-${previousPage.eventDate}`;
-      } else {
-        window.location.hash = previousPage.page;
-      }
-
-      // Resetta previousPage
-      setPreviousPage(null);
+      setCurrentPage(previousPage);
+      window.location.hash = previousPage; // Aggiorna l'hash
+      setPreviousPage(null); // Pulisci la cronologia
+      // NON resettare lo stato di Gare (selectedDate, etc.)
     } else {
       // Fallback: torna a rank
       setCurrentPage("rank");
-      setAthleteDetailFisCode(null);
-      setEventDetailCodex(null);
-      setEventDetailDate(null);
       window.location.hash = 'rank';
     }
+    // Resetta solo lo stato dei dettagli
+    setAthleteDetailFisCode(null);
+    setEventDetailCodex(null);
+    setEventDetailDate(null);
   }, [previousPage]);
-
-  // Funzioni Modal
-  const openModal = useCallback(() => setIsModalOpen(true), []);
-  const closeModal = useCallback(() => setIsModalOpen(false), []);
 
   // Listener per gestire la navigazione del browser (swipe iOS, pulsanti browser)
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(1);
-      const validPages: Page[] = ["rank", "atleti", "preferiti", "confronto", "chi-siamo"];
+      const validPages: Page[] = ["rank", "gare", "atleti", "confronto", "chi-siamo"];
 
       // Se l'hash corrisponde a una pagina principale
       if (validPages.includes(hash as Page)) {
         setCurrentPage(hash as Page);
+        // MODIFICA: Non resettare lo stato di Gare, solo quello dei dettagli
         setAthleteDetailFisCode(null);
         setEventDetailCodex(null);
         setEventDetailDate(null);
@@ -187,15 +149,17 @@ function App() {
       }
 
       // Default
-      setCurrentPage("rank");
-      setAthleteDetailFisCode(null);
-      setEventDetailCodex(null);
-      setEventDetailDate(null);
+      if (!hash) { // Se l'hash è vuoto
+        setCurrentPage("rank");
+        setAthleteDetailFisCode(null);
+        setEventDetailCodex(null);
+        setEventDetailDate(null);
+      }
     };
 
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
+  }, []); // Dipendenza vuota corretta
 
   // --- Funzione per scegliere cosa mostrare ---
   const renderPageContent = () => {
@@ -203,12 +167,26 @@ function App() {
       case "rank":
         // Passiamo la funzione di navigazione al componente Rank
         return <Rank goToAthleteDetail={goToAthleteDetail} />;
+        
+      case "gare":
+        // =======================================================
+        // === MODIFICA: Passa lo stato e i setter a Gare ===
+        // =======================================================
+        return (
+          <Gare 
+            onEventClick={goToEventDetail}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+            filters={filters}
+            setFilters={setFilters}
+          />
+        );
+        
       case "atleti":
         // Passiamo la funzione di navigazione al componente Atleti
         return <Atleti goToAthleteDetail={goToAthleteDetail} />;
-      case "preferiti":
-        // Pagina Preferiti
-        return <Preferiti goToAthleteDetail={goToAthleteDetail} />;
       case "athlete-detail":
         // Mostra la pagina di dettaglio solo se abbiamo il codice FIS
         if (athleteDetailFisCode) {
@@ -257,19 +235,16 @@ function App() {
   };
 
   return (
-    <FavoritesProvider>
+    <>
       <Header
-        openModal={openModal}
         currentPage={currentPage}
         setPage={setCurrentPage}
       />
 
-      {isModalOpen && <AuthModal onClose={closeModal} isOpen={isModalOpen} />}
-
       {renderPageContent()}
 
       <Footer />
-    </FavoritesProvider>
+    </>
   );
 }
 
