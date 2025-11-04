@@ -1,4 +1,5 @@
-import { useState, type Dispatch, type SetStateAction, useEffect, useRef } from 'react';
+// 'useRef' è stato rimosso
+import { useState, type Dispatch, type SetStateAction, useEffect } from 'react';
 // Importiamo il tipo Page dall'App principale
 import { type Page } from '../App';
 import styles from './Header.module.css';
