@@ -55,7 +55,7 @@ function App() {
   const [athleteDetailFisCode, setAthleteDetailFisCode] = useState<string | null>(initialState.athleteFisCode);
   const [eventDetailCodex, setEventDetailCodex] = useState<string | null>(initialState.eventCodex);
   const [eventDetailDate, setEventDetailDate] = useState<string | null>(initialState.eventDate);
-  const [previousPage, setPreviousPage] = useState<Page | null>(null); // Semplificato
+  const [previousHash, setPreviousHash] = useState<string | null>(null);
 
 
   // =======================================================
@@ -75,41 +75,33 @@ function App() {
 
   // 2. Funzione per navigare al dettaglio atleta
   const goToAthleteDetail = useCallback((fisCode: string) => {
-    setPreviousPage(currentPage); // Salva la pagina corrente (es. "gare")
+    setPreviousHash(window.location.hash); // Salva l'hash corrente
     setAthleteDetailFisCode(fisCode);
     setCurrentPage("athlete-detail");
     window.location.hash = `athlete-${fisCode}`;
-    window.scrollTo(0, 0); // <-- MODIFICA: Risolto problema scroll
-  }, [currentPage]); // Rimosse dipendenze inutili
+    window.scrollTo(0, 0);
+  }, []);
 
   // 3. Funzione per navigare al dettaglio evento
   const goToEventDetail = useCallback((codex: string, date: string) => {
-    setPreviousPage(currentPage); // Salva la pagina corrente (es. "gare")
+    setPreviousHash(window.location.hash); // Salva l'hash corrente
     setEventDetailCodex(codex);
     setEventDetailDate(date);
     setCurrentPage("event-detail");
     window.location.hash = `event-${codex}-${date}`;
-    window.scrollTo(0, 0); // <-- MODIFICA: Risolto problema scroll
-  }, [currentPage]); // Rimosse dipendenze inutili
+    window.scrollTo(0, 0);
+  }, []);
 
   // 4. Funzione per tornare indietro
   const goBack = useCallback(() => {
-    // Se ero su un dettaglio, torna alla pagina precedente salvata (es. 'gare')
-    if (previousPage) {
-      setCurrentPage(previousPage);
-      window.location.hash = previousPage; // Aggiorna l'hash
-      setPreviousPage(null); // Pulisci la cronologia
-      // NON resettare lo stato di Gare (selectedDate, etc.)
+    if (previousHash) {
+      window.location.hash = previousHash;
+      setPreviousHash(null); // Pulisce l'hash precedente
     } else {
       // Fallback: torna a rank
-      setCurrentPage("rank");
       window.location.hash = 'rank';
     }
-    // Resetta solo lo stato dei dettagli
-    setAthleteDetailFisCode(null);
-    setEventDetailCodex(null);
-    setEventDetailDate(null);
-  }, [previousPage]);
+  }, [previousHash]);
 
   // Listener per gestire la navigazione del browser (swipe iOS, pulsanti browser)
   useEffect(() => {
